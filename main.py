@@ -1,6 +1,5 @@
 import streamlit as st
 
-# 꾸미기 (스트림릿에서는 일부 CSS 커스터마이징도 가능해요)
 st.set_page_config(
     page_title="🌈 MBTI 별 직업 추천! 🚀",
     page_icon="💖",
@@ -8,7 +7,6 @@ st.set_page_config(
     initial_sidebar_state="auto"
 )
 
-# 스타일 커스텀: 배경, 텍스트 애니메이션 등
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap');
@@ -33,6 +31,7 @@ st.markdown("""
         border-radius: 36px;
         border: 3px dashed #6EDCD9;
         margin-top: 20px;
+        margin-bottom: 20px;
         padding: 2em 1em;
         text-align: center;
         animation: appear 1s ease;
@@ -54,7 +53,7 @@ st.markdown("""
 st.markdown("<h1 style='text-align:center;'>🌟 내 MBTI 별<br>찰떡 직업 추천! 💡</h1>", unsafe_allow_html=True)
 st.write("___")
 st.markdown("<h3 style='text-align:center;'>✨ 나의 성향에 딱! 맞는 진로를 찾아보자 ✨</h3>", unsafe_allow_html=True)
-st.write("🎈 아래에서 자신의 MBTI를 선택하면, 성격에 맞는 추천 직업과 깜찍한 한마디가 나옵니다! 👀")
+st.write("🎈 자신의 MBTI 토글을 아래에서 눌러 보세요! 👇")
 
 mbti_list = [
     "ENFP", "INFP", "ENFJ", "INFJ",
@@ -63,7 +62,8 @@ mbti_list = [
     "ESFP", "ISFP", "ESTP", "ISTP"
 ]
 
-# 추천 직업 데이터 (이모지 & 한마디 포함)
+mbti_emojis = ['✨','🌈','⭐','🎶','🌼','🐬','🚀','🥰','💡','🎨','🌻','🦄','🧩','🦋','🦸‍♂️','🐾']
+
 mbti_jobs = {
     "ENFP": ("🎨 크리에이티브 디렉터, 📰 기자, 💬 마케팅 전문가",
              "✨ 매력뿜뿜! 사람과 소통하며 세상에 긍정의 에너지를 전파해요! 🌈"),
@@ -99,23 +99,21 @@ mbti_jobs = {
              "🔥 문제해결 능력자! 실전 경험과 멋짐의 끝판왕~"),
 }
 
-st.write("")
-selected_mbti = st.selectbox("🔍 내 MBTI를 골라주세요!", mbti_list, index=0,
-                             format_func=lambda x: f"{x} {['✨','🌈','⭐','🎶','🌼','🐬','🚀','🥰','💡','🎨','🌻','🦄','🧩','🦋','🦸‍♂️','🐾'][mbti_list.index(x)]}")
+st.write("___")
+# 모든 MBTI를 토글(Expander)로 보여주기
+for idx, mbti in enumerate(mbti_list):
+    emoji = mbti_emojis[idx]
+    with st.expander(f"{mbti} {emoji}"):
+        job, message = mbti_jobs[mbti]
+        st.markdown(f"""
+        <div class="result-box">
+            <h2>{mbti} {emoji}</h2>
+            <span style="font-size:30px;">{job}</span>
+            <br><br>
+            <span style="font-size:22px;">{message}</span>
+        </div>
+        """, unsafe_allow_html=True)
 
-# 결과 표시
-if selected_mbti:
-    job, message = mbti_jobs[selected_mbti]
-    st.markdown(f"""
-    <div class="result-box">
-        <h2>{selected_mbti} {['✨','🌈','⭐','🎶','🌼','🐬','🚀','🥰','💡','🎨','🌻','🦄','🧩','🦋','🦸‍♂️','🐾'][mbti_list.index(selected_mbti)]}</h2>
-        <span style="font-size:30px;">{job}</span>
-        <br><br>
-        <span style="font-size:22px;">{message}</span>
-    </div>
-    """, unsafe_allow_html=True)
-
-# 푸터 및 링크
 st.write("___")
 st.markdown("""
 <div style="text-align:center;font-size:18px;">

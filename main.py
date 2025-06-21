@@ -53,7 +53,7 @@ st.markdown("""
 st.markdown("<h1 style='text-align:center;'>🌟 내 MBTI 별<br>찰떡 직업 추천! 💡</h1>", unsafe_allow_html=True)
 st.write("___")
 st.markdown("<h3 style='text-align:center;'>✨ 나의 성향에 딱! 맞는 진로를 찾아보자 ✨</h3>", unsafe_allow_html=True)
-st.write("🎈 자신의 MBTI 토글을 아래에서 눌러 보세요! 👇")
+st.write("🎈 아래의 토글에서 자신의 MBTI를 선택하면, 성향에 맞는 직업과 멋진 한마디가 나옵니다! 👇")
 
 mbti_list = [
     "ENFP", "INFP", "ENFJ", "INFJ",
@@ -99,15 +99,19 @@ mbti_jobs = {
              "🔥 문제해결 능력자! 실전 경험과 멋짐의 끝판왕~"),
 }
 
-st.write("___")
-# 모든 MBTI를 토글(Expander)로 보여주기
-for idx, mbti in enumerate(mbti_list):
-    emoji = mbti_emojis[idx]
-    with st.expander(f"{mbti} {emoji}"):
-        job, message = mbti_jobs[mbti]
+with st.expander("🔍 MBTI로 내 인생 직업 찾기 (여기를 눌러 펼치세요!) 🚪"):
+    selected_mbti = st.selectbox(
+        "🌟 내 MBTI를 선택하세요",
+        mbti_list,
+        format_func=lambda x: f"{x} {mbti_emojis[mbti_list.index(x)]}"
+    )
+    if selected_mbti:
+        idx = mbti_list.index(selected_mbti)
+        emoji = mbti_emojis[idx]
+        job, message = mbti_jobs[selected_mbti]
         st.markdown(f"""
         <div class="result-box">
-            <h2>{mbti} {emoji}</h2>
+            <h2>{selected_mbti} {emoji}</h2>
             <span style="font-size:30px;">{job}</span>
             <br><br>
             <span style="font-size:22px;">{message}</span>

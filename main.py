@@ -117,5 +117,3 @@ with st.expander("🔍 MBTI로 내 인생 직업 찾기 (여기를 눌러 펼치
             <span style="font-size:22px;">{message}</span>
         </div>
         """, unsafe_allow_html=True)
-
-st.write("___")

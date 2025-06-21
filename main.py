@@ -92,4 +92,28 @@ mbti_jobs = {
     "ESFP": ("🎤 연예인, 🎧 공연기획자, 🏖️ 여행가이드",
              "🎉 지금 이 순간이 가장 좋아! 긍정 에너지가 모두를 웃게 해요~"),
     "ISFP": ("🎨 디자이너, 📸 사진작가, 🌳 플로리스트",
-             "🍃
+             "🍃 감성아티스트! 자연과 예술을 사랑하는 순수한 마음"),
+    "ESTP": ("💼 영업사원, ⚽ 운동선수, 🚑 응급구조사",
+             "🚀 도전의 아이콘! 에너지 넘치고 눈치 백단!"),
+    "ISTP": ("🛠️ 엔지니어, 🚗 자동차정비사, 🏍️ 모험가",
+             "🔥 문제해결 능력자! 실전 경험과 멋짐의 끝판왕~"),
+}
+
+with st.expander("내 MBTI를 선택하세요. 토글"):
+    selected_mbti = st.selectbox(
+        "🌟 내 MBTI를 선택하세요",
+        mbti_list,
+        format_func=lambda x: f"{x} {mbti_emojis[mbti_list.index(x)]}"
+    )
+    if selected_mbti:
+        idx = mbti_list.index(selected_mbti)
+        emoji = mbti_emojis[idx]
+        job, message = mbti_jobs[selected_mbti]
+        st.markdown(f"""
+        <div class="result-box">
+            <h2>{selected_mbti} {emoji}</h2>
+            <span style="font-size:30px;">{job}</span>
+            <br><br>
+            <span style="font-size:22px;">{message}</span>
+        </div>
+        """, unsafe_allow_html=True)

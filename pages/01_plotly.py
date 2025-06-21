@@ -3,52 +3,55 @@ import yfinance as yf
 import plotly.graph_objs as go
 from datetime import date, timedelta
 
-# 1. 글로벌 시가총액 TOP 10 티커 (2025년 최신 반영)
-top10_tickers = {
-    "Microsoft": "MSFT",
-    "Apple": "AAPL",
-    "Nvidia": "NVDA",
-    "Alphabet (Google)": "GOOGL",
-    "Amazon": "AMZN",
-    "Saudi Aramco": "2222.SR",
-    "Berkshire Hathaway": "BRK-B",
-    "Eli Lilly": "LLY",
-    "Meta Platforms": "META",
-    "TSMC": "2330.TW"  # 또는 "TSM" (나스닥 ADR), 데이터 없음시 교체
-}
+# 1. 글로벌 시가총액 Top10 (2025년 중순 기준)
+top10 = [
+    ("Microsoft", "MSFT"),
+    ("Apple", "AAPL"),
+    ("Nvidia", "NVDA"),
+    ("Alphabet (Google)", "GOOGL"),
+    ("Amazon", "AMZN"),
+    ("Saudi Aramco", "2222.SR"),
+    ("Berkshire Hathaway", "BRK-B"),
+    ("Eli Lilly", "LLY"),
+    ("Meta Platforms", "META"),
+    ("TSMC", "TSM"), # 나스닥 상장 ADR (미국내 거래)
+]
 
-st.title("🌐 글로벌 시가총액 Top10 최근 1년 주가 변동")
+st.set_page_config(page_title="글로벌 시가총액 TOP 10 주가 추이", layout="wide")
+st.title("🌎 글로벌 시가총액 TOP10 - 최근 1년 주가 변화")
+st.caption("데이터 출처: Yahoo Finance / 현지 통화 기준")
 
-end_date = date.today()
-start_date = end_date - timedelta(days=365)
+# 2. 날짜 설정
+end = date.today()
+start = end - timedelta(days=365)
 
 fig = go.Figure()
-at_least_one = False  # 그래프 하나라도 출력됐는지 체크
+plotted = 0  # 데이터 성공 count
 
-for company, ticker in top10_tickers.items():
+for name, ticker in top10:
     try:
-        df = yf.download(ticker, start=start_date, end=end_date, progress=False)
-        if df is not None and not df.empty:
-            fig.add_trace(go.Scatter(x=df.index, y=df['Close'],
-                                     mode='lines',
-                                     name=company))
-            at_least_one = True
+        df = yf.download(ticker, start=start, end=end, progress=False)
+        if not df.empty:
+            fig.add_trace(go.Scatter(
+                x=df.index, y=df['Close'],
+                mode='lines', name=name))
+            plotted += 1
         else:
-            st.warning(f"[{company}] 데이터가 비어 있습니다. (불러오기 실패)")
+            st.warning(f"⚠️ {name}({ticker}) 데이터 없음")
     except Exception as e:
-        st.warning(f"[{company}] 데이터 불러오기 중 오류: {str(e)}")
+        st.warning(f"❌ {name}({ticker}) 불러오기 오류: {e}")
 
 fig.update_layout(
-    title="글로벌 시가총액 Top 10 기업 1년간 주가 변화 (종가)",
+    title="글로벌 시가총액 TOP10 최근 1년간 주가 (종가 기준)",
     xaxis_title="날짜",
     yaxis_title="주가 (현지 통화)",
     legend_title="기업명",
     template="plotly_white",
-    height=600
+    height=600,
 )
 
-if at_least_one:
+if plotted:
     st.plotly_chart(fig, use_container_width=True)
 else:
-    st.error("모든 티커의 데이터를 불러오는데 실패했습니다. 네트워크 연결, VPN, Streamlit 서버상 이슈, 또는 yfinance 라이브러리 버전을 확인하세요.")
+    st.error("모든 기업의 데이터를 불러오지 못했습니다. 네트워크나 해외티커 제한을 확인하세요.")
 

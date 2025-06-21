@@ -119,9 +119,3 @@ with st.expander("🔍 MBTI로 내 인생 직업 찾기 (여기를 눌러 펼치
         """, unsafe_allow_html=True)
 
 st.write("___")
-st.markdown("""
-<div style="text-align:center;font-size:18px;">
-    Made with ❤️ by <b>SenGPT</b> <br>
-    <span style="color:#7d1e6a;">MBTI는 재미로 보세요! <br>진짜 진로 고민은 다양한 경험과 상담을 추천해요 🎓</span>
-</div>
-""", unsafe_allow_html=True)

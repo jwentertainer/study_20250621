@@ -1,7 +1,6 @@
 folium
 streamlit_folium
 
-streamlit
 yfinance
 pandas
 plotly

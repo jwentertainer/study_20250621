@@ -3,7 +3,7 @@ import yfinance as yf
 import plotly.graph_objs as go
 from datetime import date, timedelta
 
-# 1. 티커 리스트와 회사명 매핑
+# 1. 글로벌 시가총액 TOP 10 티커 (2025년 최신 반영)
 top10_tickers = {
     "Microsoft": "MSFT",
     "Apple": "AAPL",
@@ -14,36 +14,32 @@ top10_tickers = {
     "Berkshire Hathaway": "BRK-B",
     "Eli Lilly": "LLY",
     "Meta Platforms": "META",
-    "TSMC": "2330.TW"
+    "TSMC": "2330.TW"  # 또는 "TSM" (나스닥 ADR), 데이터 없음시 교체
 }
 
-# 2. Streamlit 기본 설정
-st.set_page_config(page_title="글로벌 시가총액 TOP 10 🏦📈", layout="wide")
-st.title("🪙 글로벌 시가총액 Top10 최근 1년 주가 변화 대시보드")
+st.title("🌐 글로벌 시가총액 Top10 최근 1년 주가 변동")
 
-st.write("데이터: [Yahoo Finance](https://finance.yahoo.com/)")
-
-# 3. 최근 1년 설정
 end_date = date.today()
 start_date = end_date - timedelta(days=365)
 
-# 4. 데이터 수집 및 Plotly 시각화
 fig = go.Figure()
+at_least_one = False  # 그래프 하나라도 출력됐는지 체크
 
 for company, ticker in top10_tickers.items():
     try:
-        data = yf.download(ticker, start=start_date, end=end_date)
-        fig.add_trace(go.Scatter(
-            x=data.index,
-            y=data['Close'],
-            mode='lines',
-            name=company
-        ))
+        df = yf.download(ticker, start=start_date, end=end_date, progress=False)
+        if df is not None and not df.empty:
+            fig.add_trace(go.Scatter(x=df.index, y=df['Close'],
+                                     mode='lines',
+                                     name=company))
+            at_least_one = True
+        else:
+            st.warning(f"[{company}] 데이터가 비어 있습니다. (불러오기 실패)")
     except Exception as e:
-        st.warning(f"{company}({ticker}) 데이터 로드 실패: {e}")
+        st.warning(f"[{company}] 데이터 불러오기 중 오류: {str(e)}")
 
 fig.update_layout(
-    title="글로벌 시가총액 TOP10 1년간 주가 변화 (종가 기준)",
+    title="글로벌 시가총액 Top 10 기업 1년간 주가 변화 (종가)",
     xaxis_title="날짜",
     yaxis_title="주가 (현지 통화)",
     legend_title="기업명",
@@ -51,36 +47,8 @@ fig.update_layout(
     height=600
 )
 
-st.plotly_chart(fig, use_container_width=True)
+if at_least_one:
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.error("모든 티커의 데이터를 불러오는데 실패했습니다. 네트워크 연결, VPN, Streamlit 서버상 이슈, 또는 yfinance 라이브러리 버전을 확인하세요.")
 
-# 5. 유저가 보기 원하는 기업만 선택하도록 해도 좋습니다.
-with st.expander("직접 기업 선택하기 (기본: 전체 TOP10)"):
-    selected = st.multiselect(
-        label="기업(회사명) 선택",
-        options=list(top10_tickers.keys()),
-        default=list(top10_tickers.keys())
-    )
-
-    if selected:
-        fig2 = go.Figure()
-        for company in selected:
-            ticker = top10_tickers[company]
-            try:
-                data = yf.download(ticker, start=start_date, end=end_date)
-                fig2.add_trace(go.Scatter(
-                    x=data.index,
-                    y=data['Close'],
-                    mode='lines',
-                    name=company
-                ))
-            except Exception as e:
-                st.warning(f"{company}({ticker}) 데이터 로드 실패: {e}")
-        fig2.update_layout(
-            title="선택한 기업의 최근 1년간 주가 변화 (종가 기준)",
-            xaxis_title="날짜",
-            yaxis_title="주가 (현지 통화)",
-            legend_title="기업명",
-            template="plotly_white",
-            height=600
-        )
-        st.plotly_chart(fig2, use_container_width=True)

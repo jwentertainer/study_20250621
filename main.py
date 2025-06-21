@@ -99,7 +99,7 @@ mbti_jobs = {
              "🔥 문제해결 능력자! 실전 경험과 멋짐의 끝판왕~"),
 }
 
-with st.expander("🔍 MBTI로 내 인생 직업 찾기 (여기를 눌러 펼치세요!) 🚪"):
+with st.expander("내 MBTI를 선택하세요. 토글"):
     selected_mbti = st.selectbox(
         "🌟 내 MBTI를 선택하세요",
         mbti_list,
